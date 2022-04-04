@@ -16,13 +16,13 @@ There are 2 types of ways to organize encoder-decoder models:
 
 In these, the LSTM receives both the image and sequence information while training. Intuitively, this means that the words are predicted using the visual cues from the image. At the same time, the image information is not necessary to learn the syntactic and structural rules of the language. So, it can add an overhead to the model.
  
-    ![Inject Model diagram](/assets/models/inject.png)
+![Inject Model diagram](/assets/models/inject.png)
 
  - Merge Architectures
 
  In this type of architecture, the LSTM layer only processes the sequential information provided by the caption. Intuitively, it misses some important image information, while predicting the next word. At the same time, it is less complex, as there are less information to learn from.
 
-    ![Merge Model diagram](/assets/models/merge.png)
+ ![Merge Model diagram](/assets/models/merge.png)
 
   We experiment with both and see which gives better results.
 
@@ -40,4 +40,28 @@ In these, the LSTM receives both the image and sequence information while traini
 
 
   ### Project outline
-    ![Project flow diagram](/assets/models/process.png)
+
+  #### Dataset
+
+  For this project to be feasible with our limited resources, I have used Flickr8k dataset, which has 1 GB size. It contains 8000 images with 6000 training set images and 1000 images each for test and validation sets. Each image contains 5 captions per image, for a total of 30,000 captions.
+
+  ### Architecture
+  ![Project flow diagram](/assets/models/process.png)
+
+  The model is given an image as input and generates a string caption as output.
+
+  In practicality, the architecture takes 2 inputs. An image feature set, and the sequence formed till now. Each caption starts with a //<start> token, which initiates generation of the rest of sentence, until the <end> token or maximum caption length is reached.
+
+  For e.g., if an image has a ground truth caption “a dog is playing with ball“, then the input-output pairs to process the caption are as shown
+
+  | Input | Output|
+  | ------| ------|
+  | Image| Input Sequence | Output sequence|
+  |-----------------------| ---------------|
+  |P "start" | "a" |
+  |P "start a" | "dog" |
+  |P "start a dog" | "is" |
+  |P "start a dog is" | "playing" |
+  |P "start a dog is playing" | "with" |
+  |P "start a dog is playing with" | "ball" |
+  |P "start a dog is playing with ball" | "end"|

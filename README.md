@@ -45,7 +45,7 @@ In these, the LSTM receives both the image and sequence information while traini
 
   For this project to be feasible with our limited resources, I have used Flickr8k dataset, which has 1 GB size. It contains 8000 images with 6000 training set images and 1000 images each for test and validation sets. Each image contains 5 captions per image, for a total of 30,000 captions.
 
-  ### Architecture
+  #### Architecture
   ![Project flow diagram](/assets/models/process.png)
 
   The model is given an image as input and generates a string caption as output.
@@ -55,13 +55,100 @@ In these, the LSTM receives both the image and sequence information while traini
   For e.g., if an image has a ground truth caption “a dog is playing with ball“, then the input-output pairs to process the caption are as shown
 
   | Input | Output|
-  | ------| ------|
   | Image| Input Sequence | Output sequence|
   |-----------------------| ---------------|
-  |P "start" | "a" |
-  |P "start a" | "dog" |
-  |P "start a dog" | "is" |
-  |P "start a dog is" | "playing" |
-  |P "start a dog is playing" | "with" |
-  |P "start a dog is playing with" | "ball" |
-  |P "start a dog is playing with ball" | "end"|
+  |P | "start" | "a" |
+  |P | "start a" | "dog" |
+  |P | "start a dog" | "is" |
+  |P | "start a dog is" | "playing" |
+  |P | "start a dog is playing" | "with" |
+  |P | "start a dog is playing with" | "ball" |
+  |P | "start a dog is playing with ball" | "end"|
+
+  Now let's dive in to the code.
+
+  ### Code
+
+  1. Preprocessing Captions
+
+  In this step, I remove the punctuations from all captions such as commas and full stops. Words of length less than 3 are also removed since they do not affect the caption's meaning and are called <b> stop words</b>.  Every word is converted to lower case to make the captions consistent, and a <start> and <end> tag is added to each caption to mark the beginning and termination for training. 
+  
+  ```
+  def clean_descriptions(descriptions):
+	table = str.maketrans('', '', string.punctuation)
+	for key, desc_list in descriptions.items():
+		for i in range(len(desc_list)):
+                    desc = desc_list[i]
+                    desc = desc.split()
+                    desc = [word.lower() for word in desc]
+                    desc = [w.translate(table) for w in desc]
+                    desc = [word for word in desc if len(word)>1]
+                    desc = [word for word in desc if word.isalpha()]
+                    desc_list[i] =  ' '.join(desc)
+
+  ```
+
+  Also, later on, I removed words which were rarely occurring in our dataset. Removing infrequently occurring words improved performance. This is because rare words do not occur enough times in our dataset to be properly learned by our model.
+  
+  ```
+  def reduce_vocab(descriptions):
+    all_train_captions = list()
+    for key, val in descriptions.items():
+        for cap in val:
+            all_train_captions.append(cap)
+    word_count_threshold = 5
+    word_counts = dict()
+    nsents = 0
+    for sent in all_train_captions:
+        nsents += 1
+        for w in sent.split(' '):
+            word_counts[w] = word_counts.get(w, 0) + 1
+            
+    for key, desc_list in descriptions.items():
+    	  for i in range(len(desc_list)):
+               desc = desc_list[i]
+               desc = desc.split()
+               desc = [w for w in desc if word_counts[w] >= word_count_threshold]
+               desc_list[i] =  ' '.join(desc)
+```
+
+For full code, please see [file](code/prep_text2.py)
+  
+
+  2. Image Feature extraction
+
+  Two variations were run for acquiring our image feature vector. In both instances we used the VGG16 model. We first trained our images using pre trained weights. Since the last layer is the classification layer and this does not concern the task of image captioning, we popped the last layer and worked with the fully connected layer that returns a vector of 4096.
+
+  The second variation is the fine tuning of VGG net, instead of using the pre trained weights, new weights were reached by creating our own classification layer and training it on our dataset.
+
+  For more information on feature extraction and finetuning see - [CNN training ] (code/encoder/doc.md)
+
+  3. Sequence generation
+
+  The data needs to be sequenced to be trained word by word through our LSTM. Each image has five captions. The maximum length of the caption is 34 without the reduction of vocabulary and 33 with the reduction of vocabulary. We pad the captions that do not reach the length of the longest caption. Each word is converted to a one hot vector and fed word by word. The photo features are also added for every time step of the LSTM. The sequencing is made easier using the tokenizer which streamlines our data. Note that this step is only done for training. 
+
+  ```
+  def create_sequences(tokenizer, max_length, desc_list, photo):
+	X1, X2, y = list(), list(), list()
+	# walk through each description for the image
+	for desc in desc_list:
+		# encode the sequence
+		seq = tokenizer.texts_to_sequences([desc])[0]
+		# split one sequence into multiple X,y pairs
+		for i in range(1, len(seq)):
+			# split into input and output pair
+			in_seq, out_seq = seq[:i], seq[i]
+			# pad input sequence
+			in_seq = pad_sequences([in_seq], maxlen=max_length)[0]
+			# encode output sequence
+			out_seq = to_categorical([out_seq], num_classes=vocab_size)[0]
+			# store
+			X1.append(photo)
+			X2.append(in_seq)
+			y.append(out_seq)
+	return np.array(X1), np.array(X2), np.array(y)
+
+  ```
+
+  For full code, please see [file](code/merge.py)
+

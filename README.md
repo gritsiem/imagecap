@@ -54,9 +54,9 @@ In these, the LSTM receives both the image and sequence information while traini
 
   For e.g., if an image has a ground truth caption “a dog is playing with ball“, then the input-output pairs to process the caption are as shown
 
-  | Input | Output|
+  | Input |---| Output|
   | Image| Input Sequence | Output sequence|
-  |-----------------------| ---------------|
+  |------|----------------| ---------------|
   |P | "start" | "a" |
   |P | "start a" | "dog" |
   |P | "start a dog" | "is" |
@@ -120,6 +120,8 @@ For full code, please see [file](code/prep_text2.py)
   Two variations were run for acquiring our image feature vector. In both instances we used the VGG16 model. We first trained our images using pre trained weights. Since the last layer is the classification layer and this does not concern the task of image captioning, we popped the last layer and worked with the fully connected layer that returns a vector of 4096.
 
   The second variation is the fine tuning of VGG net, instead of using the pre trained weights, new weights were reached by creating our own classification layer and training it on our dataset.
+  
+  We don't use the encoder in the training of the language model directly, to save training time. Instead we use the feature representation that is the output. We store these features in a python dict and pickle it. The file is omitted here because it is big (127 MB).
 
   For more information on feature extraction and finetuning see - [CNN training ] (code/encoder/doc.md)
 
@@ -150,5 +152,35 @@ For full code, please see [file](code/prep_text2.py)
 
   ```
 
-  For full code, please see [file](code/merge.py)
+  For full code, please see [file](code/models/merge.py)
+
+  4. Generation
+
+  The generation is done word by word. The test image is fed with the <start> tag and the generation continues until we encounter the <end> tag. The last layer of our model uses the Softmax activation, this returns a vector of predictions for the next word in our sequence. We use an argmax function which returns the word at the index of the most likely or the highest value in our output vector. This word is sequenced with our previous predictions and fed again into our model to make the next word prediction.
+
+  For full code, please see [file](code/generator.py)
+
+  5. Evaluation
+
+  The literature on Image Captioning involves the usage of several metrics including BLEU, ROUGE, METEOR and CIDEr. For this problem, we have made use of the MSCOCO Evaluation Engine, that provides open source code to get the value of the above metrics.
+
+
+
+#### Results and Analysis
+
+The experiments performed definitely improved the model as can be seen by the following examples:
+
+![Project flow diagram](/assets/examples.png)
+
+The two main models that were dealt with were the inject and merge models. Both models work with different arrangement of data processing. Through our various experiments it was observed that the merge architecture performs better than the inject architecture. The fine tuning of the VGG model improved performance on the metrics. Reducing Vocabulary also improved the performance.
+
+Problems noticed were:
+
+1. Overfitting
+The word "man" is often seen to be followed by the phrase "in red shirt" a lot, without it being so in the image. Also, due to dog being the most common noun and images of dogs being very common in the dataset, lots of dog images get a similar description even though they are very different. This can be attributed to the size of the dataset, which can be overcome by training on a bigger dataset such as MSCOCO.
+
+2. Generalization is noticeably difficult for this model.
+ In pictures that are relatively more complex, and full of visual information, the descriptions are not correct, like here:
+
+ ![Project flow diagram](/assets/wrongex.png)
 

@@ -5,9 +5,9 @@ Image captioning is the Artificial Intelligence problem of seeing pictures and d
  ![Final Model Examples](/assets/imcap.png)
 
 1. [Background](#background)
-2. [Project Outline ](#project-outline)
+2. [Project Overview ](#project-overview)
 3. [Code](#code)
-4.  [Results and Analysis](#results-and-Analysis)
+4. [Results and Analysis](#results-and-Analysis)
 
 ### Background
 Image Captioning research has existed since the early twenty first century. The earlier methods use probabilistic learning models, which were limited in their capacity to compute such non linear functionality with flexibility. These include template based approaches or conditional random fields (CRF). Retrieval based approaches which use annotations and similarity scores work but do not offer any generation abilities and depend on the dataset.
@@ -15,8 +15,16 @@ Image Captioning research has existed since the early twenty first century. The 
 With the popularity of neural networks and deep learning, the problem has opened up. In this we have encoder-decoder models, multimodal systems and attention. We also have models based on other learning method like reinforcement learning and GANs. Several new datasets have prompted many new experiments. Still, we are far from perfect.
 
 
-### Project outline
+### Project Overview
 
+  #### Tech Stack
+
+  - Python 3
+  - Google collab for GPU capabilities
+  - Anaconda for package management.
+  - Spyder IDE
+
+  As a student, my resources were very limited. All model training happened online on Google Colab. The rest of the code such preprocessing, cleaning, tokenization and generation have been performed locally in python environment.
   #### Dataset
 
   For this project to be feasible with our limited resources, I have used Flickr8k dataset, which has 1 GB size. It contains 8000 images with 6000 training set images and 1000 images each for test and validation sets. Each image contains 5 captions per image, for a total of 30,000 captions.

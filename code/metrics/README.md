@@ -28,7 +28,7 @@ So, the score tries to give higher scores to similarity and creativity.
 
 As mentioned before, two types of models organizations - inject and merge, were tried. On top of that, I also experiment on training them with full vocabulary and then a reduced vocabulary. After finalizing reduced vocabulary due to improvement, I finally tried a variation of the system where the encoder had been fine-tuned on the chosen dataset. Below is the summary of results.
 
-1. Inject model results
+### 1. Inject model results
 
 | Score | Inject, Full |Inject,Reduced | Deeper Inject |After Fine -Tuning|
 |--|--|--|--|--|
@@ -41,9 +41,10 @@ As mentioned before, two types of models organizations - inject and merge, were 
 |CIDEr | 0.232 | 0.252 | 0.208 | 0.263|
 
 
-2. Merge model results
+### 2. Merge model results
 
 |Score |Merge,Full| Merge, Reduced| Deeper Merge| After Fine -Tuning|
+|--|--|--|--|--|
 |B1 | 0.575 | 0.585 | 0.569 | 0.602|
 |B2 | 0.316 | 0.313 | 0.309 | 0.365|
 |B3 | 0.212 | 0.219 | 0.217 | 0.265|
@@ -55,13 +56,17 @@ As mentioned before, two types of models organizations - inject and merge, were 
 ## Inferences
 
 1. Reduced vocabulary improves scores and also improves learning rate. This can be seen from the following graphs.
+
 ![Learning curve](/assets/learningrate.png)
 
 ![CIDEr comparision](/assets/CIDEr.png)
 
+
 2. Increasing number of layers is not helpful in improving model, especially for inject models. This can be seen in 4th column of both the tables. This could be due to overfitting of the model in the data.
 
+
 3. In both model types, fine tuning has greatly improved the scores. 
+
 
 4. Merge models consistently outperforms inject models.
 

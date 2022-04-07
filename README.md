@@ -183,16 +183,20 @@ In these, the LSTM receives both the image and sequence information while traini
 
 The experiments performed definitely improved the model as can be seen by the following examples:
 
-![Project flow diagram](/assets/examples.png)
+![Good outputs](/assets/examples.png)
+
+The improvement in model can be seen by the comparison of baseline and final models:
 
 The two main models that were dealt with were the inject and merge models. Both models work with different arrangement of data processing. Through our various experiments it was observed that the merge architecture performs better than the inject architecture. The fine tuning of the VGG model improved performance on the metrics. Reducing Vocabulary also improved the performance.
 
 Problems noticed were:
 
 1. Overfitting
+
 The word "man" is often seen to be followed by the phrase "in red shirt" a lot, without it being so in the image. Also, due to dog being the most common noun and images of dogs being very common in the dataset, lots of dog images get a similar description even though they are very different. This can be attributed to the size of the dataset, which can be overcome by training on a bigger dataset such as MSCOCO.
 
-2. Generalization is noticeably difficult for this model.
+2. Poor Generalization.
+
  In pictures that are relatively more complex, and full of visual information, the descriptions are not correct, like here:
 
  ![Bad outputs ](/assets/wrongex.png)

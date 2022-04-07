@@ -11,7 +11,7 @@ You can see the original VGG16 architecture below:
 We use the third last layer with 4096 neurons to extract the feature representation.
 
 Inceptionv3 is a lot more complicated and larger. The feature representation from it has a size of 512.
-<img src="../../assets/inceptionv3.png" alt="IV3 model" style="max-width: 25%;transform: rotate(-90deg);"/>
+<img src="../../assets/inceptionv3.png" alt="IV3 model" style="transform: rotate(-90deg);" width="20%"/>
 
 
 2. After VGG16 gave better results, its feature representation was used for Merge Architecture which performed better.

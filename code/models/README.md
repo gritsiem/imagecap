@@ -41,16 +41,40 @@ correct class is selected. At each step, I predict one word and add it to the ex
 
 ## Architectures
 
+Note that:
+
+- 2971 is the reduced vocabulary size. Orginal size was 7579. 
+- 33 is the size of the longest caption in the dataset (in words). This is the size of the input layer.
+- Diiferent sizes of image feature inputs can be seen. These include VGG16 (4096), Inception (2048), and a more condensed version with 512 size representation.  This representation gave a slight improvement.
 
 ### 1. Inject
 
-<img src="../../assets/model/inject_plot.png" alt="Simple Inject" width="20%"/>
+<img src="../../assets/models/inject_plot.png" alt="Simple Inject" width="50%"/>
+
+In inject, LSTM layer takes input from the combined information of the images and the caption sentences.
 
 ### 2. Merge
 
-<img src="../../assets/model/merge_plot.png" alt="Merge Simple" width="20%"/>
+<img src="../../assets/models/merge_plot.png" alt="Merge Simple" width="50%"/>
 
+In merge, LSTM layer does not receive image feature representation and only trains on captions.
 
+### 3. Composite
 
+Even a composite model with 2 LSTMs, representing a mix of inject and merge was tried. It performed less than baseline so further experiments were not pursued.
 
+<img src="../../assets/models/composite_plot.png" alt="Composite Model" width="50%"/>
 
+Variations of merge and inject were also tested as can be seen ![here](assets/models). Smaller feature representations were tried in ![Condensed Merge](assets/models/merge_condensed_features_plot.png) model. More dense layers were added in this ![Deep Merge](assets/models/merge_deep_plot.png). Models with multiple LSTMs were also tried with same results, so it was decided to keep it simple instead.
+
+## Points to note
+
+- Lots of experiments have been done but only the ones with noticeable impact have been described here in detail. Lot of these have not been done with full testing due to lack of resources. InceptionV3 was not experimented on after the initial models, deeper models were only experimented with in case of finetuning and reduced vocabulary. Composite models were not used due to long training hours. Yet, there has been some improvement due to other methods than architecture.
+
+- Training these models requires more resources. I still made the best of what I had. I have more than 100 h5 files in my folder including checkpoints. The biggest models had been the finetuned VGG16 which was around 3 GBs.
+
+- This is for a small dataset of 6000 training images which is just not enough. Even if the proportions were changed to 7000:500:500, it did not improve performance.
+
+- Hyperparameter tuning was done very sparingly. Dropout rates, layer sizes, embedding sized - all are a lot of work to tune. At most 1 experiment per hyperparameter was attempted. It took upwards of 4 hours in good cases on colab to achieve.
+
+- I would like to make an attention architecture in Keras to see if there's any improvement. It has seemed to really improve captioning results.

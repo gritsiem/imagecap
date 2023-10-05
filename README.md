@@ -16,7 +16,7 @@ With the popularity of neural networks and deep learning, the problem has opened
 
 
 ### Project Overview
-
+Please find the full report ![here](report.pdf)
   #### Tech Stack
 
   - Python 3
